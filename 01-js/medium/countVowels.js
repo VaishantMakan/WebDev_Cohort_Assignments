@@ -6,7 +6,18 @@
 */
 
 function countVowels(str) {
-    // Your code here
+  // Your code here
+  // first we create a set containing vovels
+  const set = new Set(["a", "e", "i", "o", "u"]);
+
+  let total = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    let letter = str[i].toLowerCase();
+    if (set.has(letter)) total += 1;
+  }
+
+  return total;
 }
 
 module.exports = countVowels;
