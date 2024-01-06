@@ -3,6 +3,19 @@
 */
 
 function wait(n) {
+  let p = new Promise(function (resolve) {
+    setTimeout(function () {
+      resolve();
+    }, n * 1000);
+  });
+
+  return p;
 }
 
 module.exports = wait;
+// async function main() {
+//   let value = await wait(3);
+//   console.log(value);
+// }
+
+// main();
