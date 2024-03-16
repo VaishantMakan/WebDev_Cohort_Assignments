@@ -7,16 +7,40 @@
     let todoState = [];
     let oldTodoState = [];
 
-    function addTodoToDom() {
-      
+    function addTodoToDom(todo) {
+      // fetch the todos div where we add todos
+      const todoList = document.getElementById("todos")
+
+      //create a child div to append to parent todos div
+      const childTodo = document.createElement("div");
+
+      //give this child div some id to identify it later when removing
+      childTodo.id = `todo-${todo.id}`;
+
+      childTodo.innerHTML = 
+      `<h1>${todo.title}</h1> 
+      <p>${todo.description}</p>
+      <button onclick="removeTodo(${todo.id})">Remove</button>`;
+
+      todoList.appendChild(childTodo);
     }
 
     function removeTodoFromDom(todo) {
-      
+      const todoElement = document.getElementById(`todo-${todo.id}`);
+      if (todoElement) {
+        todoElement.remove();
+      }
     }
 
     function updateTodoInDom(oldTodo, newTodo) {
-        
+      const todoElement = document.getElementById(`todo-${oldTodo.id}`);
+      if (todoElement) {
+        todoElement.innerHTML = `
+          <h3>${newTodo.title}</h3>
+          <p>${newTodo.description}</p>
+          <button onclick="removeTodo(${newTodo.id})">Remove</button>
+        `;
+      }
     }
 
     function updateState(newTodos) {
@@ -31,6 +55,49 @@
       // calculate these 3 arrays
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
+
+      //Find added, updated, deleted todos
+      newTodos.forEach(newTodo => {
+        //first we check if this newTodo already exists in the oldTodos state...if yes then that means update
+        const oldTodo = oldTodoState.find(oldTodo => {
+          return oldTodo.id === newTodo.id;
+        })
+
+        //if newTodo not found in oldTodoState that means added
+        if(!oldTodo)
+          added.push(newTodo);
+        else if(newTodo.title !== oldTodo.title || newTodo.description !== oldTodo.description) //if found ... updated
+          updated.push(newTodo);
+      })
+
+      //now to check for delete ... if a todo present in oldTodoState but not in newTodos then delete
+      oldTodoState.forEach(oldTodo => {
+          const newTodo = newTodos.find(newTodo => {
+            return newTodo.id === oldTodo.id;
+          })
+
+          //if not found then delete
+          if(!newTodo)
+            deleted.push(oldTodo);
+        })
+
+        //Update DOM
+        added.forEach(todo => {
+          addTodoToDom(todo);
+        })
+
+        deleted.forEach(todo => {
+          removeTodoFromDom(todo);
+        })
+
+        updated.forEach(todo => {
+          const oldTodo = oldTodoState.find(oldTodo => {
+            return oldTodo.id === todo.id;
+          })
+
+          updateTodoInDom(oldTodo, todo);
+        })
+
       oldTodoState = newTodos;
     }
 
@@ -44,6 +111,12 @@
       })
       updateState(todoState);
     }
+
+    function removeTodo(todoId) {
+      todoState = todoState.filter(todo => todo.id !== todoId);
+      updateState(todoState);
+    }
+
   </script>
 </head>
 
